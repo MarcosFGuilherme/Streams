@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -76,7 +75,7 @@ public class Program {
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(pathIn))) {
 			
-			List<Product> list = new ArrayList<Product>();
+			List<Product> list = new ArrayList<>();
 			
 			String line = br.readLine();
 
@@ -88,8 +87,8 @@ public class Program {
 			}
 			
 			showProducts(list,"Original List");
-			double avg = showAverage(list);
-			
+			Double avg = showAverage(list);
+			/*
 			Comparator<String> comp = (s1,s2) -> s1.toUpperCase().compareTo(s2.toUpperCase());
 			
 			List<String> names = list.stream()
@@ -97,8 +96,16 @@ public class Program {
 					.map(p -> p.getName())
 					.sorted(comp.reversed())
 					.collect(Collectors.toList());
-						
+					
 			showProductsNames(names,"Products with less than average price");
+			*/
+			List<Product> prodAvg = list.stream()
+					.filter(p -> p.getPrice() < avg)
+					.collect(Collectors.toList());
+			
+			prodAvg.sort((p1,p2)-> p1.getPrice().compareTo(p2.getPrice()));
+			
+			showProducts(prodAvg,"Products with less than average price");			
 			
 		} catch (IOException e) {
 			System.out.println("Error reading file: " + e.getMessage());
@@ -110,6 +117,7 @@ public class Program {
 	}
 	
 	public static void showProducts(List<Product> list, String title) {
+		
 		System.out.println(Utility.stringFix("", 50, "="));
 		System.out.println(Utility.stringFix(title, 50, " "));
 		System.out.println(Utility.stringFix("", 50, "="));
