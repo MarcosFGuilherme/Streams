@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -87,8 +88,17 @@ public class Program {
 			}
 			
 			showProducts(list,"Original List");
-			showAverage(list);
-			showProducts(list,"Products with less than average price");
+			double avg = showAverage(list);
+			
+			Comparator<String> comp = (s1,s2) -> s1.toUpperCase().compareTo(s2.toUpperCase());
+			
+			List<String> names = list.stream()
+					.filter(p -> p.getPrice() < avg)
+					.map(p -> p.getName())
+					.sorted(comp.reversed())
+					.collect(Collectors.toList());
+						
+			showProductsNames(names,"Products with less than average price");
 			
 		} catch (IOException e) {
 			System.out.println("Error reading file: " + e.getMessage());
@@ -98,6 +108,7 @@ public class Program {
 		
 		sc.close();
 	}
+	
 	public static void showProducts(List<Product> list, String title) {
 		System.out.println(Utility.stringFix("", 50, "="));
 		System.out.println(Utility.stringFix(title, 50, " "));
@@ -111,11 +122,23 @@ public class Program {
 		System.out.println(Utility.stringFix("", 30, "-"));
 		System.out.println(Utility.stringFix("", 50, "="));
 	}
-	public static void showAverage(List<Product> list) {
+	
+	public static void showProductsNames(List<String> list, String title) {
+		System.out.println(Utility.stringFix("", 50, "="));
+		System.out.println(Utility.stringFix(title, 50, " "));
+		System.out.println(Utility.stringFix("", 50, "="));
+		System.out.println(Utility.stringFix("Product", 20, " "));
+		System.out.println(Utility.stringFix("", 20, "-"));
+		list.forEach(System.out::println);
+		System.out.println(Utility.stringFix("", 20, "-"));
+	}
+	
+	public static double showAverage(List<Product> list) {
 		System.out.print("Average price: ");
 		double avg = list.stream()
 				.map(p -> p.getPrice())
 				.reduce(0.0, (x,y) -> x+y) / list.size();
-		System.out.println(String.format("%.2f", avg));		
+		System.out.println(String.format("%.2f", avg));	
+		return avg;
 	}
 }
